@@ -72,6 +72,7 @@ class Grafo:
                     lista_vertices.append(aresta[0])
                 if aresta[1] not in lista_vertices:
                     lista_vertices.append(aresta[1])
+        print(lista_vertices)
     
     #agora vamos criar algo para achar o menor caminho entre os vértices dados
     def cria_vertices(self):
