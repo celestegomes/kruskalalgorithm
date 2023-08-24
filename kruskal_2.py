@@ -143,17 +143,18 @@ while start:
             v = int(entrada1[1])
             w = int(entrada1[2])
             grafokruskal.cria_aresta(u, v, w)
+        start = False
 
     except EOFError:
         start = False
 
 grafokruskal.quantidade_arestas = len(grafokruskal.lista_arestas)
-grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1, 0)
+grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1)
 
 #input do caminho que queremos fazer, atribuindo x ao começo e y ao final
-x_y = input().split()
+x_y = input("Insira dois números inteiros separados por - onde o primeiro é o ponto inicial e o segundo o ponto final:\n").split("-")
 x = int(x_y[0])
 y = int(x_y[1])
 
 #printa o menor caminho
-print(x, y)
+grafokruskal.print(x, y)
