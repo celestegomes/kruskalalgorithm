@@ -15,11 +15,9 @@ class Grafo:
     def __init__(self):
         #inerente a essa classe, temos a lista de arestas desordenadas e as ordenadas
         self.lista_arestas = []
-        self.lista_vertices = []
         self.lista_vertices_menor = []
         self.menor_grafo = []
         self.quantidade_arestas = 0
-        self.caminho = []
     
     #um criador de arestas
     def cria_aresta(self, u, v, w): #recebe os inteiros na ordem: vertice que inicia, vertice que termina e o peso
@@ -32,40 +30,6 @@ class Grafo:
         def peso(e):
             return e.peso
         lista.sort(key=peso)
-
-    #agora se ordena a lista de arestas fazendo um quicksort
-    def quickSort(self, lista, low, high):
-        if low < high:
-            pi = self.pedaco(lista, low, high)
-            self.quickSort(lista, low, pi-1)
-            self.quickSort(lista, pi+1 , high)
-
-    def pedaco(self, lista, low, high):
-        pivo = lista[low]
-        i = low
-        j = high +1
-        aux = True
-        while aux:
-            i += 1
-            aux2 = True
-            while lista[i].peso < pivo.peso and aux2:
-                if i <= high:
-                    aux2 = False
-                else:
-                    i += 1
-            aux2 = True
-            j -= 1
-            while lista[j].peso < pivo.peso and aux2:
-                if j >= low:
-                    aux2 = False
-                else:
-                    j -= 1
-            if i >= j:
-                aux = False
-            else:
-                lista[i], lista[j] = lista[j], lista[i]
-        lista[low], lista[j] = lista[j], lista[low]
-        return j
     
     #agora que a lista de arestas já está ordenada, aplicamos a ideia do kruskal em si
     def kruskal(self):
@@ -140,33 +104,14 @@ class Grafo:
                 return visitados
                 
         return visitados_provisorio
-    
-    #agora vou criar uma recursiva pra procurar o caminho que chega de um ponto dado a outro nesse novo grafo criado
-    def busca_caminhos(self, comeco, final, caminho = []):
-        caminho = caminho + [comeco.indice]
-        
-        if comeco == final:
-            return [comeco.indice]
-        
-        if comeco not in self.lista_vertices_menor:
-            return []
-        
-        for node in comeco.adjacentes:
-            if node.indice not in caminho:
-                novos_caminhos = self.busca_caminhos(node, final, caminho)
-                if novos_caminhos != None:
-                    for p in novos_caminhos:
-                        self.caminho.append(p)
         
     #um metodo simples só para atribuir algumas variaveis e retornar meu resultado. recebe os dois pontos em numeros inteiros
     def cria_caminho(self, x, y):
         verticex = self.lista_vertices_menor[x]
         verticey = self.lista_vertices_menor[y]
-        self.caminho = []
-        #self.busca_caminhos(verticex, verticey)
-        self.caminho = self.acha_caminhos(verticex, verticey)
+        lista_caminho = self.acha_caminhos(verticex, verticey)
         caminho = []
-        for vertice in self.caminho:
+        for vertice in lista_caminho:
             caminho.append(vertice.indice)
         return caminho
 
@@ -194,7 +139,6 @@ while start:
         start = False
 
 grafokruskal.quantidade_arestas = len(grafokruskal.lista_arestas)
-#grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1)
 grafokruskal.sorteando(grafokruskal.lista_arestas)
 grafokruskal.kruskal()
 
