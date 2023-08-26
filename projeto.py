@@ -18,6 +18,7 @@ class Grafo:
         self.lista_vertices = []
         self.menor_grafo = []
         self.quantidade_arestas = 0
+        self.caminho = []
     
     #um criador de arestas
     def cria_aresta(self, u, v, w): #recebe os inteiros na ordem: vertice que inicia, vertice que termina e o peso
@@ -114,28 +115,24 @@ class Grafo:
         if comeco not in self.lista_vertices:
             return []
         
-        caminhos = []
-        
         for node in comeco.adjacentes:
             if node.indice not in caminho:
                 novos_caminhos = self.busca_caminhos(node, final, caminho)
                 if novos_caminhos != None:
                     for p in novos_caminhos:
-                        caminhos.append(p)
-        
-        return caminhos
+                        self.caminho.append(p)
         
     #um metodo simples só para atribuir algumas variaveis e retornar meu resultado. recebe os dois pontos em numeros inteiros
     def cria_caminho(self, x, y):
         verticex = self.lista_vertices[x]
         verticey = self.lista_vertices[y]
-        caminho = self.busca_caminhos(verticex, verticey)
-        return caminho #esse metodo retorna uma lista com menor caminho de acordo com o algoritmo de kruskal
-    
+        self.caminho = []
+        self.busca_caminhos(verticex, verticey)
+
     #metodo que faz o print, usando o metodo cria caminho para receber a lista do caminho
     def imprime(self, x, y):
-        menor_caminho = self.cria_caminho(x, y)
-        print(f"O menor caminho do ponto {x} até o ponto {y} é {menor_caminho}.")
+        self.cria_caminho(x, y)
+        print(f"O menor caminho do ponto {x} até o ponto {y} é {self.caminho}.")
 
 grafokruskal = Grafo()
 
