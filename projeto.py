@@ -6,9 +6,9 @@ class Aresta:
 
 #cria-se uma classe de vertices
 class Vertices:
-    def __init__(self):
+    def __init__(self, lista):
         self.indice = 0
-        self.adjacentes = []
+        self.adjacentes = lista
 
 #cria-se uma classe para o grafo
 class Grafo:
@@ -20,8 +20,8 @@ class Grafo:
         self.quantidade_arestas = 0
     
     #um criador de arestas
-    def cria_aresta(self, x, y, w): #recebe os inteiros na ordem: vertice que inicia, vertice que termina e o peso
-        vertices = [x, y]
+    def cria_aresta(self, u, v, w): #recebe os inteiros na ordem: vertice que inicia, vertice que termina e o peso
+        vertices = [u, v]
         aresta = Aresta(vertices, w)
         self.lista_arestas.append(aresta)
     
@@ -41,14 +41,14 @@ class Grafo:
         while aux:
             i += 1
             aux2 = True
-            while lista[i].peso < pivo.peso and aux2:
+            while lista[i].peso > pivo.peso and aux2:
                 if i >= high:
                     aux2 = False
                 else:
                     i += 1
             aux2 = True
             j -= 1
-            while lista[j].peso > pivo.peso and aux2:
+            while lista[j].peso < pivo.peso and aux2:
                 if j <= low:
                     aux2 = False
                 else:
@@ -68,10 +68,11 @@ class Grafo:
                 pass
             else:
                 self.menor_grafo.append(aresta)
-                if aresta[0] not in lista_vertices:
-                    lista_vertices.append(aresta[0])
-                if aresta[1] not in lista_vertices:
-                    lista_vertices.append(aresta[1])
+                if aresta.vertices[0] not in lista_vertices:
+                    lista_vertices.append(aresta.vertices[0])
+                if aresta.vertices[1] not in lista_vertices:
+                    lista_vertices.append(aresta.vertices[1])
+        print(lista_vertices)
     
     #agora vamos criar algo para achar o menor caminho entre os vértices dados
     def cria_vertices(self):
@@ -82,17 +83,23 @@ class Grafo:
             #tento atribuir y como adjacente a x
             try :
                 verticex = self.lista_vertices[x]
+                verticex.indice = x
             except:
-                falta = x - len(self.lista_vertices)
-                self.lista_vertices.append(Vertices * falta)
+                falta = (x - len(self.lista_vertices)) + 1
+                for i in range (falta):
+                    vertice = Vertices([])
+                    self.lista_vertices.append(vertice)
                 verticex = self.lista_vertices[x]
                 verticex.indice = x
             try:
                 verticey = self.lista_vertices[y]
+                verticey.indice = y
             except:
-                falta = y - len(self.lista_vertices)
-                self.lista_vertices.append(Vertices * falta)
-                verticey = self.lista_vertices[x]
+                falta = (y - len(self.lista_vertices))+1
+                for i in range (falta):
+                    vertice = Vertices([])
+                    self.lista_vertices.append(vertice)
+                verticey = self.lista_vertices[y]
                 verticey.indice = y
             verticex.adjacentes.append(verticey)
             verticey.adjacentes.append(verticex)
@@ -109,8 +116,8 @@ class Grafo:
         
         caminhos = []
         
-        for node in comeco.caminhos:
-            if node.nome not in caminho:
+        for node in comeco.adjacentes:
+            if node.indice not in caminho:
                 novos_caminhos = self.busca_caminhos(node, final, caminho)
                 if novos_caminhos != None:
                     for p in novos_caminhos:
@@ -125,11 +132,38 @@ class Grafo:
         caminho = self.busca_caminhos(verticex, verticey)
         return caminho #esse metodo retorna uma lista com menor caminho de acordo com o algoritmo de kruskal
     
-    #aqui dentro maria cria o metodo que faz o print, usando o metodo cria caminho para receber a lista do caminho
+    #metodo que faz o print, usando o metodo cria caminho para receber a lista do caminho
+    def imprime(self, x, y):
+        menor_caminho = self.cria_caminho(x, y)
+        print(f"O menor caminho do ponto {x} até o ponto {y} é {menor_caminho}.")
 
 grafokruskal = Grafo()
-#aqui maria adiciona o loop para criar as arestas
+
+#loop para criar as arestas
+start = True
+dados = open('reachability.txt', 'r')
+while start:
+    try:
+        for i in dados:
+            entrada1 = i.split(" ")
+            u = int(entrada1[0])
+            v = int(entrada1[1])
+            w = int(entrada1[2])
+            grafokruskal.cria_aresta(u, v, w)
+        start = False
+
+    except EOFError:
+        start = False
+
 grafokruskal.quantidade_arestas = len(grafokruskal.lista_arestas)
-grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1, 0)
-#aqui maria cria o recebimento do input do caminho que queremos fazer, atribuindo x ao começo e y ao final
-#aqui maria chama o metodo que faz o print para printar o menor caminho
+grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1)
+grafokruskal.kruskal()
+grafokruskal.cria_vertices()
+
+#input do caminho que queremos fazer, atribuindo x ao começo e y ao final
+x_y = input("Insira dois números inteiros separados por - onde o primeiro é o ponto inicial e o segundo o ponto final:\n").split("-")
+x = int(x_y[0])
+y = int(x_y[1])
+
+#printa o menor caminho
+grafokruskal.imprime(x, y)
