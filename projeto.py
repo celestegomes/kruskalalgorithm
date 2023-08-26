@@ -16,6 +16,7 @@ class Grafo:
         #inerente a essa classe, temos a lista de arestas desordenadas e as ordenadas
         self.lista_arestas = []
         self.lista_vertices = []
+        self.lista_vertices_menor = []
         self.menor_grafo = []
         self.quantidade_arestas = 0
         self.caminho = []
@@ -66,7 +67,14 @@ class Grafo:
         lista_vertices = []
         for aresta in self.lista_arestas:
             if aresta.vertices[0] in lista_vertices and aresta.vertices[1] in lista_vertices:
-                pass
+                self.caminho = []
+                x = aresta.vertices[0]
+                verticex = self.lista_vertices[x]
+                y = aresta.vertices[1]
+                verticey = self.lista_vertices[y]
+                self.busca_caminhos(verticex, verticey)
+                if self.caminho == []:
+                    self.menor_grafo.append(aresta)
             else:
                 self.menor_grafo.append(aresta)
                 if aresta.vertices[0] not in lista_vertices:
@@ -75,31 +83,31 @@ class Grafo:
                     lista_vertices.append(aresta.vertices[1])
     
     #agora vamos criar algo para achar o menor caminho entre os vértices dados
-    def cria_vertices(self):
-        for aresta in self.menor_grafo:
+    def cria_vertices(self, dados, lista):
+        for aresta in dados:
             #separo os vertices que a aresta recebe
             x = int(aresta.vertices[0])
             y = int(aresta.vertices[1])
             #tento atribuir y como adjacente a x
             try :
-                verticex = self.lista_vertices[x]
+                verticex = lista[x]
                 verticex.indice = x
             except:
-                falta = (x - len(self.lista_vertices)) + 1
+                falta = (x - len(lista)) + 1
                 for i in range (falta):
                     vertice = Vertices([])
-                    self.lista_vertices.append(vertice)
-                verticex = self.lista_vertices[x]
+                    lista.append(vertice)
+                verticex = lista[x]
                 verticex.indice = x
             try:
-                verticey = self.lista_vertices[y]
+                verticey = lista[y]
                 verticey.indice = y
             except:
-                falta = (y - len(self.lista_vertices))+1
+                falta = (y - len(lista))+1
                 for i in range (falta):
                     vertice = Vertices([])
-                    self.lista_vertices.append(vertice)
-                verticey = self.lista_vertices[y]
+                    lista.append(vertice)
+                verticey = lista[y]
                 verticey.indice = y
             verticex.adjacentes.append(verticey)
             verticey.adjacentes.append(verticex)
@@ -111,7 +119,7 @@ class Grafo:
         if comeco == final:
             return [caminho]
         
-        if comeco not in self.lista_vertices:
+        if comeco not in self.lista_vertices_menor:
             return []
         
         for node in comeco.adjacentes:
@@ -123,8 +131,8 @@ class Grafo:
         
     #um metodo simples só para atribuir algumas variaveis e retornar meu resultado. recebe os dois pontos em numeros inteiros
     def cria_caminho(self, x, y):
-        verticex = self.lista_vertices[x]
-        verticey = self.lista_vertices[y]
+        verticex = self.lista_vertices_menor[x]
+        verticey = self.lista_vertices_menor[y]
         self.caminho = []
         self.busca_caminhos(verticex, verticey)
 
@@ -137,7 +145,7 @@ grafokruskal = Grafo()
 
 #loop para criar as arestas
 start = True
-dados = open('reachability.txt', 'r')
+dados = open('teste.txt', 'r')
 while start:
     try:
         for i in dados:
@@ -153,8 +161,9 @@ while start:
 
 grafokruskal.quantidade_arestas = len(grafokruskal.lista_arestas)
 grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1)
+grafokruskal.cria_vertices(grafokruskal.lista_arestas, grafokruskal.lista_vertices)
 grafokruskal.kruskal()
-grafokruskal.cria_vertices()
+grafokruskal.cria_vertices(grafokruskal.menor_grafo, grafokruskal.lista_vertices_menor)
 
 #input do caminho que queremos fazer, atribuindo x ao começo e y ao final
 x_y = input("Insira dois números inteiros separados por - onde o primeiro é o ponto inicial e o segundo o ponto final:\n").split("-")
