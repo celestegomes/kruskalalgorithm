@@ -27,7 +27,12 @@ class Grafo:
         aresta = Aresta(vertices, w)
         self.lista_arestas.append(aresta)
     
-    
+    #teste função sort
+    def sorteando(self, lista):
+        def peso(e):
+            return e.peso
+        lista.sort(key=peso)
+
     #agora se ordena a lista de arestas fazendo um quicksort
     def quickSort(self, lista, low, high):
         if low < high:
@@ -43,15 +48,15 @@ class Grafo:
         while aux:
             i += 1
             aux2 = True
-            while lista[i].peso > pivo.peso and aux2:
-                if i >= high:
+            while lista[i].peso < pivo.peso and aux2:
+                if i <= high:
                     aux2 = False
                 else:
                     i += 1
             aux2 = True
             j -= 1
             while lista[j].peso < pivo.peso and aux2:
-                if j <= low:
+                if j >= low:
                     aux2 = False
                 else:
                     j -= 1
@@ -66,58 +71,60 @@ class Grafo:
     def kruskal(self):
         lista_vertices = []
         for aresta in self.lista_arestas:
-            if aresta.vertices[0] in lista_vertices and aresta.vertices[1] in lista_vertices:
+            x = aresta.vertices[0]
+            y = aresta.vertices[1]
+            if x in lista_vertices and y in lista_vertices:
                 self.caminho = []
-                x = aresta.vertices[0]
-                verticex = self.lista_vertices[x]
-                y = aresta.vertices[1]
-                verticey = self.lista_vertices[y]
+                verticex = self.lista_vertices_menor[x]
+                verticey = self.lista_vertices_menor[y]
                 self.busca_caminhos(verticex, verticey)
                 if self.caminho == []:
                     self.menor_grafo.append(aresta)
+                    verticex.adjacentes.append(verticey)
+                    verticey.adjacentes.append(verticex)
             else:
                 self.menor_grafo.append(aresta)
-                if aresta.vertices[0] not in lista_vertices:
-                    lista_vertices.append(aresta.vertices[0])
-                if aresta.vertices[1] not in lista_vertices:
-                    lista_vertices.append(aresta.vertices[1])
+                self.cria_vertices(aresta, self.lista_vertices_menor)
+                if x not in lista_vertices:
+                    lista_vertices.append(x)
+                if y not in lista_vertices:
+                    lista_vertices.append(y)
     
     #agora vamos criar algo para achar o menor caminho entre os vértices dados
-    def cria_vertices(self, dados, lista):
-        for aresta in dados:
-            #separo os vertices que a aresta recebe
-            x = int(aresta.vertices[0])
-            y = int(aresta.vertices[1])
-            #tento atribuir y como adjacente a x
-            try :
-                verticex = lista[x]
-                verticex.indice = x
-            except:
-                falta = (x - len(lista)) + 1
-                for i in range (falta):
-                    vertice = Vertices([])
-                    lista.append(vertice)
-                verticex = lista[x]
-                verticex.indice = x
-            try:
-                verticey = lista[y]
-                verticey.indice = y
-            except:
-                falta = (y - len(lista))+1
-                for i in range (falta):
-                    vertice = Vertices([])
-                    lista.append(vertice)
-                verticey = lista[y]
-                verticey.indice = y
-            verticex.adjacentes.append(verticey)
-            verticey.adjacentes.append(verticex)
+    def cria_vertices(self, aresta, lista):
+        #separo os vertices que a aresta recebe
+        x = int(aresta.vertices[0])
+        y = int(aresta.vertices[1])
+        #tento atribuir y como adjacente a x
+        try :
+            verticex = lista[x]
+            verticex.indice = x
+        except:
+            falta = (x - len(lista)) + 1
+            for i in range (falta):
+                vertice = Vertices([])
+                lista.append(vertice)
+            verticex = lista[x]
+            verticex.indice = x
+        try:
+            verticey = lista[y]
+            verticey.indice = y
+        except:
+            falta = (y - len(lista))+1
+            for i in range (falta):
+                vertice = Vertices([])
+                lista.append(vertice)
+            verticey = lista[y]
+            verticey.indice = y
+        verticex.adjacentes.append(verticey)
+        verticey.adjacentes.append(verticex)
     
     #agora vou criar uma recursiva pra procurar o caminho que chega de um ponto dado a outro nesse novo grafo criado
     def busca_caminhos(self, comeco, final, caminho = []):
         caminho = caminho + [comeco.indice]
         
         if comeco == final:
-            return [caminho]
+            return [comeco.indice]
         
         if comeco not in self.lista_vertices_menor:
             return []
@@ -160,10 +167,9 @@ while start:
         start = False
 
 grafokruskal.quantidade_arestas = len(grafokruskal.lista_arestas)
-grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1)
-grafokruskal.cria_vertices(grafokruskal.lista_arestas, grafokruskal.lista_vertices)
+#grafokruskal.quickSort(grafokruskal.lista_arestas, 0, grafokruskal.quantidade_arestas - 1)
+grafokruskal.sorteando(grafokruskal.lista_arestas)
 grafokruskal.kruskal()
-grafokruskal.cria_vertices(grafokruskal.menor_grafo, grafokruskal.lista_vertices_menor)
 
 #input do caminho que queremos fazer, atribuindo x ao começo e y ao final
 x_y = input("Insira dois números inteiros separados por - onde o primeiro é o ponto inicial e o segundo o ponto final:\n").split("-")
