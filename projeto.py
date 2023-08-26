@@ -38,11 +38,11 @@ class Grafo:
             x = aresta.vertices[0]
             y = aresta.vertices[1]
             if x in lista_vertices and y in lista_vertices:
-                self.caminho = []
+                caminho = []
                 verticex = self.lista_vertices_menor[x]
                 verticey = self.lista_vertices_menor[y]
-                self.busca_caminhos(verticex, verticey)
-                if self.caminho == []:
+                caminho = self.acha_caminhos(verticex, verticey)
+                if caminho == []:
                     self.menor_grafo.append(aresta)
                     verticex.adjacentes.append(verticey)
                     verticey.adjacentes.append(verticex)
