@@ -119,6 +119,28 @@ class Grafo:
         verticex.adjacentes.append(verticey)
         verticey.adjacentes.append(verticex)
     
+    #teste busca caminho
+    def acha_caminhos(self, comeco, final, visitados = []):
+        visitados_provisorio = []
+        for item in visitados:
+            visitados_provisorio.append(item)
+        visitados_provisorio.append(comeco)
+        if final in comeco.adjacentes:
+            visitados_provisorio.append(final)
+            return visitados_provisorio
+        else:
+            passou = False
+            for vertice in comeco.adjacentes:
+                if vertice not in visitados_provisorio:
+                    visitados_provisorio = self.acha_caminhos(vertice, final, visitados_provisorio)
+                    passou = True
+                if final in visitados_provisorio:
+                    break
+            if passou == False:
+                return visitados
+                
+        return visitados_provisorio
+    
     #agora vou criar uma recursiva pra procurar o caminho que chega de um ponto dado a outro nesse novo grafo criado
     def busca_caminhos(self, comeco, final, caminho = []):
         caminho = caminho + [comeco.indice]
@@ -141,18 +163,23 @@ class Grafo:
         verticex = self.lista_vertices_menor[x]
         verticey = self.lista_vertices_menor[y]
         self.caminho = []
-        self.busca_caminhos(verticex, verticey)
+        #self.busca_caminhos(verticex, verticey)
+        self.caminho = self.acha_caminhos(verticex, verticey)
+        caminho = []
+        for vertice in self.caminho:
+            caminho.append(vertice.indice)
+        return caminho
 
     #metodo que faz o print, usando o metodo cria caminho para receber a lista do caminho
     def imprime(self, x, y):
-        self.cria_caminho(x, y)
-        print(f"O menor caminho do ponto {x} até o ponto {y} é {self.caminho}.")
+        caminho = self.cria_caminho(x, y)
+        print(f"O menor caminho do ponto {x} até o ponto {y} é {caminho}.")
 
 grafokruskal = Grafo()
 
 #loop para criar as arestas
 start = True
-dados = open('teste.txt', 'r')
+dados = open('reachability.txt', 'r')
 while start:
     try:
         for i in dados:
