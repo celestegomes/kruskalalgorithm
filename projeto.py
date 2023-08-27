@@ -25,11 +25,17 @@ class Grafo:
         aresta = Aresta(vertices, w)
         self.lista_arestas.append(aresta)
     
-    #teste função sort
+    #função sort
     def sorteando(self, lista):
         def peso(e):
             return e.peso
         lista.sort(key=peso)
+    
+    #função sort pro menor grafo
+    def sorteando(self, lista):
+        def indice(e):
+            return e.vertices[0]
+        lista.sort(key=indice)
     
     #agora que a lista de arestas já está ordenada, aplicamos a ideia do kruskal em si
     def kruskal(self):
@@ -83,7 +89,7 @@ class Grafo:
         verticex.adjacentes.append(verticey)
         verticey.adjacentes.append(verticex)
     
-    #teste busca caminho
+    #busca caminho
     def acha_caminhos(self, comeco, final, visitados = []):
         visitados_provisorio = []
         for item in visitados:
@@ -105,20 +111,17 @@ class Grafo:
                 
         return visitados_provisorio
         
-    #um metodo simples só para atribuir algumas variaveis e retornar meu resultado. recebe os dois pontos em numeros inteiros
-    def cria_caminho(self, x, y):
-        verticex = self.lista_vertices_menor[x]
-        verticey = self.lista_vertices_menor[y]
-        lista_caminho = self.acha_caminhos(verticex, verticey)
-        caminho = []
-        for vertice in lista_caminho:
-            caminho.append(vertice.indice)
-        return caminho
+    #um metodo simples só para imprimir o resultado
+    def imprimir(self):
+        self.sorteando(self.menor_grafo)
+        print("O menor grafo é:")
+        for aresta in self.menor_grafo:
+            x = aresta.vertices[0]
+            y = aresta.vertices[1]
+            w = aresta.peso
+            print(f'{x}<->{y} ({w})')
+    
 
-    #metodo que faz o print, usando o metodo cria caminho para receber a lista do caminho
-    def imprime(self, x, y):
-        caminho = self.cria_caminho(x, y)
-        print(f"O menor caminho do ponto {x} até o ponto {y} é {caminho}.")
 
 grafokruskal = Grafo()
 
@@ -142,10 +145,5 @@ grafokruskal.quantidade_arestas = len(grafokruskal.lista_arestas)
 grafokruskal.sorteando(grafokruskal.lista_arestas)
 grafokruskal.kruskal()
 
-#input do caminho que queremos fazer, atribuindo x ao começo e y ao final
-x_y = input("Insira dois números inteiros separados por - onde o primeiro é o ponto inicial e o segundo o ponto final:\n").split("-")
-x = int(x_y[0])
-y = int(x_y[1])
-
-#printa o menor caminho
-grafokruskal.imprime(x, y)
+#printa o menor grafo
+grafokruskal.imprimir()
